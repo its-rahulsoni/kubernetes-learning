@@ -28,7 +28,8 @@ spec:
     metadata:
       # The labels here must match the selector above
       labels:
-        # Every pod created will be labeled app: kubernetes-learning
+        # Every pod created will be
+        app: kubernetes-learning
         app: kubernetes-learning
 
     # ➡️ Starts the definition of containers that should run inside each pod.

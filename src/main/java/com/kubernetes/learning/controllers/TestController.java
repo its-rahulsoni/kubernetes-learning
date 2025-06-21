@@ -12,6 +12,11 @@ public class TestController {
 
     private static final Logger logger = LogManager.getLogger(TestController.class);
 
+    @GetMapping("/")
+    public String home() {
+        return "Spring Boot App is Running!";
+    }
+
     // A simple GET request to say hello to the world ....
     @GetMapping("/hello")
     public String sayHello() {
