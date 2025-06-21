@@ -1,0 +1,58 @@
+# ➡️ Specifies the API version of the Kubernetes object you're defining.
+# apps/v1 is the stable version for deployments.
+apiVersion: apps/v1
+
+# ➡️ You're defining a Deployment resource — a controller that manages pods and ensures a specified number of them are running.
+kind: Deployment
+
+# ➡️ Metadata about this Kubernetes object.
+metadata:
+  # name: the name of the Deployment.
+  # This is used to identify and manage the deployment (e.g., kubectl get deployment kubernetes-learning).
+  name: kubernetes-learning
+
+spec:
+  # ➡️ The desired number of pod replicas (i.e., containers running your app).
+  # Here, Kubernetes will ensure 2 pods are always running.
+  replicas: 2
+  # ➡️ This tells the Deployment:
+  # “Which pods should I manage?”
+  selector:
+    # It matches pods whose labels include app: kubernetes-learning
+    # Think of it like a filter: “Find pods with this label, and I’ll manage them.”
+    matchLabels:
+      app: kubernetes-learning
+
+  # ➡️ This is the template for each pod created by this Deployment.
+  template:
+    metadata:
+      # The labels here must match the selector above
+      labels:
+        # Every pod created will be labeled app: kubernetes-learning
+        app: kubernetes-learning
+
+    # ➡️ Starts the definition of containers that should run inside each pod.
+    spec:
+      # One pod can run multiple containers (like a sidecar), but here we have just one.
+      containers:
+          # ➡️ The name of the container inside the pod.
+          # This name is used internally and for logs, monitoring, etc.
+        - name: kubernetes-learning-container
+          # ➡️ The Docker image to use.
+          # Here, it's a local image you’ve built with:
+          # docker build -t kubernetes-learning:local .
+          #
+          #⚠️ If you used a public image or ECR image, this would be something like:
+          # image: 123456789012.dkr.ecr.ap-south-1.amazonaws.com/kubernetes-learning:latest
+          image: kubernetes-learning:local
+          # ➡️ This tells Kubernetes:
+          #
+          # “My application inside the container listens on port 8080.”
+          # It doesn’t expose this to the outside — it just tells Kubernetes how to route traffic inside the pod.
+          # You need a Service object to expose this port outside the pod (you already have one in service.yaml).
+          ports:
+            - containerPort: 8080
+
+# ✅ Summary (Plain English)
+#“Run 2 pods of my Spring Boot app using the Docker image kubernetes-learning:local, each listening on port 8080.
+# Label them as app: kubernetes-learning so I can control them. If a pod crashes, restart it. If I update the image, roll out the new version gradually.”

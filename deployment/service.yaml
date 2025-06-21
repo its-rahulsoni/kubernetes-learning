@@ -1,0 +1,46 @@
+# ➡️ This is the API version for the Service object.
+# v1 is the stable version used for core resources like Service, Pod, ConfigMap, etc.
+apiVersion: v1
+
+# ➡️ You're creating a Service, a stable networking endpoint in Kubernetes.
+# Services expose pods so that:
+# Other pods can find and talk to them (via DNS)
+# Or (in this case) users outside the cluster can access your app
+kind: Service
+metadata:
+  # ➡️ The name of the Service in the cluster.
+  # You can reference this service in DNS as kubernetes-learning-service.default.svc.cluster.local
+  # You also use this name to kubectl get service kubernetes-learning-service
+  name: kubernetes-learning-service
+spec:
+  # ➡️ Specifies the type of service. There are 4 types:
+  #
+  # Type	        Use Case
+  # ClusterIP:	    Default. Exposes the service internally
+  # NodePort:	    Exposes service on a node's port
+  # LoadBalancer:	Exposes externally via cloud or Minikube
+  # ExternalName:	Maps to external DNS name
+  #
+  # In Minikube, a LoadBalancer is emulated, and you access it using:
+  # minikube service kubernetes-learning-service
+  type: LoadBalancer
+  selector:
+    # ➡️ This tells the Service:
+    # “Find and send traffic to pods with label app: kubernetes-learning.”
+    # This label must match the one in your deployment.yaml so the service can route traffic to the correct pods.
+    app: kubernetes-learning
+  ports:
+    # ➡️ The service will route traffic using TCP protocol (default for HTTP apps).
+    # You could also use UDP if needed for something like DNS or video streams.
+    - protocol: TCP
+      # ➡️ This is the port the service exposes to the outside world (on the LoadBalancer or Minikube).
+      # This is the port your browser or client will connect to.
+      port: 8080
+      # ➡️ This is the port inside the container/pod where your Spring Boot app is actually running.
+      # So this means:
+      # "When someone hits the LoadBalancer on port 8080, forward the request to port 8080 on the backend pods."
+      targetPort: 8080
+
+# ✅ Plain English Summary
+# “Create a LoadBalancer service named kubernetes-learning-service that listens on port 8080 and forwards traffic to pods labeled app: kubernetes-learning,
+# sending requests to container port 8080 using TCP.”
