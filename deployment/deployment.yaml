@@ -30,10 +30,10 @@ spec:
       labels:
         # Every pod created will be
         app: kubernetes-learning
-        app: kubernetes-learning
 
     # ➡️ Starts the definition of containers that should run inside each pod.
     spec:
+      serviceAccountName: kubernetes-learning-sa
       # One pod can run multiple containers (like a sidecar), but here we have just one.
       containers:
           # ➡️ The name of the container inside the pod.
@@ -45,7 +45,7 @@ spec:
           #
           #⚠️ If you used a public image or ECR image, this would be something like:
           # image: 123456789012.dkr.ecr.ap-south-1.amazonaws.com/kubernetes-learning:latest
-          image: kubernetes-learning:local
+          image: kubernetes-learn:latest
           # ➡️ This tells Kubernetes:
           #
           # “My application inside the container listens on port 8080.”
@@ -53,6 +53,21 @@ spec:
           # You need a Service object to expose this port outside the pod (you already have one in service.yaml).
           ports:
             - containerPort: 8080
+
+          # ----------------- probes -----------------
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+
+          readinessProbe:
+              httpGet:
+                path: /actuator/health/readiness
+                port: 8080
+              initialDelaySeconds: 5
+              periodSeconds: 5
 
 # ✅ Summary (Plain English)
 #“Run 2 pods of my Spring Boot app using the Docker image kubernetes-learning:local, each listening on port 8080.

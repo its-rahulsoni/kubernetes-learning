@@ -7,14 +7,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api1")
 public class TestController {
 
     private static final Logger logger = LogManager.getLogger(TestController.class);
 
     @GetMapping("/")
     public String home() {
-        return "Spring Boot App is Running!";
+        return "Spring Boot App is Running!!!!!!!";
     }
 
     // A simple GET request to say hello to the world ....
