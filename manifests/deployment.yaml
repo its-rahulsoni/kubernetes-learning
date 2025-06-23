@@ -63,6 +63,11 @@ spec:
         - name: cfg
           configMap:
             name: kube-learning-config
+
+        - name: log-volume
+          persistentVolumeClaim:
+            claimName: my-app-pvc
+
       serviceAccountName: kubernetes-learning-sa
       # One pod can run multiple containers (like a sidecar), but here we have just one.
       containers:
@@ -75,13 +80,17 @@ spec:
             - name: cfg
               mountPath: /config
 
+            # ⬇️ Mount writable Persistent Volume
+            - name: log-volume
+              mountPath: /data/logs
+
           # ➡️ The Docker image to use.
           # Here, it's a local image you’ve built with:
           # docker build -t kubernetes-learning:local .
           #
           #⚠️ If you used a public image or ECR image, this would be something like:
           # image: 123456789012.dkr.ecr.ap-south-1.amazonaws.com/kubernetes-learning:latest
-          image: kubernetes-learning:v3333333333333333333333333333333333333333333333333333333333
+          image: kubernetes-learning:v3
           # This tells Kubernetes: “Don’t try to pull this image from Docker Hub or any registry; just use the local image inside Minikube.”
           imagePullPolicy: Never
           # ➡️ This tells Kubernetes:
@@ -136,7 +145,6 @@ spec:
                 name: kube-learning-config
             - secretRef:
                 name: kube-learning-secret
-
 
 
 
