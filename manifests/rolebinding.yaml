@@ -1,0 +1,34 @@
+# This tells Kubernetes that you’re using the RBAC API group, version v1.
+# This API group supports defining access control using roles and bindings.
+apiVersion: rbac.authorization.k8s.io/v1
+# You’re creating a RoleBinding, which binds:
+# a Role (set of permissions)
+# to a subject (a user, group, or service account)
+#
+# RoleBindings are namespaced, and apply only within the namespace specified.
+kind: RoleBinding
+metadata:
+  # This is the name of the RoleBinding.
+  # You’ll use this name to identify and manage the binding.
+  name: kubernetes-learning-rolebinding
+  # This RoleBinding is limited to the default namespace.
+  # It will only grant access to resources in this namespace.
+  namespace: default
+# This section defines who gets the permissions.
+subjects:
+  # This says: “Grant the permissions to a ServiceAccount named kubernetes-learning-sa in the default namespace.”
+  # This matches the ServiceAccount you created earlier in serviceaccount.yaml.
+  - kind: ServiceAccount
+    name: kubernetes-learning-sa
+    namespace: default
+# This specifies what role to bind.
+roleRef:
+  # You're linking this binding to a Role (not a ClusterRole).
+  # name: kubernetes-learning-role refers to the Role you defined previously.
+  # apiGroup confirms you're referencing a Kubernetes RBAC role (not from another API group).
+  kind: Role
+  name: kubernetes-learning-role
+  apiGroup: rbac.authorization.k8s.io
+
+# ✅ In Plain English:
+# Bind the Role kubernetes-learning-role to the ServiceAccount kubernetes-learning-sa, so that this service account can access pods, services, and endpoints in the default namespace.

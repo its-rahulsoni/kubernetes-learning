@@ -7,11 +7,14 @@ ENV TZ=Asia/Kolkata
 # Set the working directory in the container
 WORKDIR /app
 
+# Install curl
+RUN apk add --no-cache curl
+
 # Add the Spring Boot JAR file to the container
-COPY target/gha-learning-0.0.1-SNAPSHOT.jar /app/gha-learning-0.0.1-SNAPSHOT.jar
+COPY target/kubernetes-learning-0.0.1-SNAPSHOT.jar /app/kubernetes-learning.jar
 
 # Expose the port that the app runs on (usually 8080 for Spring Boot)
 EXPOSE 8080
 
 # Run the JAR file
-ENTRYPOINT ["java", "-jar", "/app/gha-learning-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "/app/kubernetes-learning.jar"]
