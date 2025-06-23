@@ -115,13 +115,20 @@ spec:
               # So once the initial 60-second delay is over, Kubernetes will check the endpoint:
               periodSeconds: 10
 
+          # ── ★ resource requests & limits ──────────────
+          # Parent key for all resource configuration. Groups requests and limits.
           resources:
-            requests:
-              cpu: "100m"
-              memory: "200Mi"
-            limits:
-              cpu: "500m"
-              memory: "500Mi"
+            # Minimum amounts that Kubernetes guarantees to this container. They’re also used for scheduling.
+            # Ensures your pod gets placed only on nodes that can spare these resources.
+            requests: # “Guarantees”
+              cpu: "100m"      # • 100 millicores (0.1 CPU) is *reserved* for this pod. Pod always gets that slice; HPA uses it as 100 % reference.
+              memory: "150Mi"  # • 150 MiB RAM is *reserved*. Node must have at least this free when scheduling.
+            # Upper bounds the container may consume.	Protects the cluster from “noisy-neighbor” pods.
+            limits: # “Hard caps”
+              # Allows bursting up to 0.3 CPU. If it tries to exceed this, kubelet throttles it. Prevents CPU starvation of other pods.
+              cpu: "300m"      # • Pod can burst up to 0.3 CPU; beyond that it’s throttled
+              # Hard-cap at 300 MiB. If the Java heap + overhead exceeds this, the container gets OOM-killed. Stops runaway memory leaks from crashing the node.
+              memory: "300Mi"  # • If pod uses >300 MiB it will be OOM-killed
 
           # ✅ Inject config from ConfigMap and Secret
           envFrom:
