@@ -2,12 +2,22 @@ package com.kubernetes.learning.controllers;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class TestController {
+
+    @Value("${db.username}")
+    private String username;
+
+    @Value("${db.password}")
+    private String password;
+
+    @Value("${my.app.url}")
+    private String myAppUrl;
 
     private static final Logger logger = LogManager.getLogger(TestController.class);
 
@@ -20,7 +30,8 @@ public class TestController {
     @GetMapping("/hello")
     public String sayHello() {
         logger.info("Api /hello is invoked to say - Hello, World!.");
-        return "Service kubernetes-learning says - Hello, World!";
+        return "Service kubernetes-learning says - Hello, World! along with secrets - username: " + username +
+                " password: " + password + " and config - myAppUrl: " + myAppUrl;
     }
 
     // A simple GET request to respond with a healthy instance message ....

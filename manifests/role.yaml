@@ -1,0 +1,45 @@
+# This specifies the API group and version that supports RBAC (Role-Based Access Control) in Kubernetes.
+# rbac.authorization.k8s.io/v1 is the stable version for defining Role, ClusterRole, RoleBinding, and ClusterRoleBinding.
+apiVersion: rbac.authorization.k8s.io/v1
+# You're creating a Role — a namespaced RBAC permission object.
+# A Role defines what resources a user or service account can access within a specific namespace.
+kind: Role
+# Contains identifying metadata for this role.
+metadata:
+  # This is the name of the role.
+  # You'll refer to this in your RoleBinding.
+  name: kubernetes-learning-role
+  # This role only applies inside the default namespace.
+  # If your pods run in this namespace (they do), this is the correct place.
+  namespace: default
+# This is the list of permissions granted by the role.
+rules:
+  # This specifies which API group the resources belong to.
+  #
+  # An empty string "" means the core API group, which includes:
+  #
+  # pods
+  # services
+  # endpoints
+  # configmaps
+  # namespaces, etc.
+  #
+  #⚠️ If you wanted to access resources like deployments (from the apps group), you'd write apiGroups: ["apps"].
+  - apiGroups: [""]
+    # These are the resources that this role gives access to.
+    # You're allowing actions on:
+    #
+    # services: Kubernetes services (like your kubernetes-learning-service)
+    # endpoints: Internal records of which pods back a service
+    # pods: Individual running units in Kubernetes
+    resources: ["services", "endpoints", "pods"]
+    # These are the actions allowed on the resources.
+    # Explanation:
+    #
+    # get: Fetch information about a single resource
+    # list: List all resources of a type (e.g., kubectl get pods)
+    # watch: Subscribe to changes on the resource (needed for service discovery and informers)
+    verbs: ["get", "list", "watch"]
+
+# ✅ In Plain English:
+# In the default namespace, define a role named kubernetes-learning-role that allows getting, listing, and watching pods, services, and endpoints in the core API group.
