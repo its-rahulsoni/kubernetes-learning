@@ -23,6 +23,31 @@ spec:
     matchLabels:
       app: kubernetes-learning
 
+  # ⬇️ Add it here, under spec, before template
+  # strategy controls how updates are rolled out.
+  # It is not a property of individual pods (template).
+  # It's part of the Deployment-level spec.
+  # This is the rollout strategy for your Deployment. It tells Kubernetes how to apply updates when you change something in your Deployment (like a new image).
+  strategy:
+    # This sets the rollout type to RollingUpdate, which is the default strategy. It means:
+    # Kubernetes will gradually replace old pods with new ones, without downtime, according to limits you define below.
+    type: RollingUpdate
+    rollingUpdate:
+      # How many pods can be unavailable (i.e. not ready) at the same time during the update.
+      # Meaning: At most, one pod can be offline at any point during the update.
+      # This helps prevent too much disruption — you're limiting how many of your currently serving pods can go down.
+      # You can also set this as a percentage, like "25%".
+      # ✅ Example:
+      # If your Deployment has replicas: 4, and maxUnavailable: 1, then during the update, at least 3 pods will always be available.
+      maxUnavailable: 1 # number of pods that can be unavailable during update
+      # How many extra pods can be scheduled above the desired replica count during the update.
+      # Meaning: Kubernetes can temporarily create 1 additional pod during the update, before removing an old one.
+      # Helps ensure new pods are up and ready before old ones are removed.
+      # Also supports percentages like "50%".
+      # ✅ Example:
+      # If your Deployment has replicas: 2, and maxSurge: 1, then up to 3 pods may be running temporarily during the update.
+      maxSurge: 1 # number of extra pods that can be scheduled during update
+
   # ➡️ This is the template for each pod created by this Deployment.
   template:
     metadata:
@@ -56,7 +81,7 @@ spec:
           #
           #⚠️ If you used a public image or ECR image, this would be something like:
           # image: 123456789012.dkr.ecr.ap-south-1.amazonaws.com/kubernetes-learning:latest
-          image: kubernetes-learning:latest
+          image: kubernetes-learning:v3333333333333333333333333333333333333333333333333333333333
           # This tells Kubernetes: “Don’t try to pull this image from Docker Hub or any registry; just use the local image inside Minikube.”
           imagePullPolicy: Never
           # ➡️ This tells Kubernetes:
@@ -72,15 +97,23 @@ spec:
             httpGet:
               path: /actuator/health/liveness
               port: 8080
-            initialDelaySeconds: 10
+            initialDelaySeconds: 60
             periodSeconds: 10
 
           readinessProbe:
               httpGet:
                 path: /actuator/health/readiness
                 port: 8080
-              initialDelaySeconds: 5
-              periodSeconds: 5
+                # This tells Kubernetes:
+                #“Wait 60 seconds after the container starts before running the first liveness or readiness probe.”
+                #
+                #It gives your app time to boot up before Kubernetes starts checking if it's alive or ready.
+                # Useful when your app takes time to initialize (like a Spring Boot app with a slow startup).
+              initialDelaySeconds: 60
+              # This tells Kubernetes:
+              # “After the first probe, run the health check every 10 seconds.”
+              # So once the initial 60-second delay is over, Kubernetes will check the endpoint:
+              periodSeconds: 10
 
           resources:
             requests:
