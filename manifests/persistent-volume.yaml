@@ -7,5 +7,6 @@ spec:
     storage: 1Gi
   accessModes:
     - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain  # ← 💡 Retains data even after PVC is deleted
   hostPath:             # ✅ Only for testing in Minikube/local
     path: /mnt/data
