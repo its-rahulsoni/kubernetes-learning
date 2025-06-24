@@ -1,0 +1,33 @@
+# What it does: Uses the current stable API version for Ingress resources.
+# Why it matters: Ensures compatibility with Kubernetes v1.19+ and newer features.
+apiVersion: networking.k8s.io/v1
+# What it does: Declares this Kubernetes resource as an Ingress.
+# Why it matters: Ingress objects define routing rules to expose services externally (HTTP/HTTPS).
+kind: Ingress
+# 📌 What it does: Assigns a name to the Ingress resource (app-ingress).
+#
+#✅ Why it matters: Helps you identify and manage this Ingress with kubectl.
+metadata:
+  name: app-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /  # Rewrite URL to root
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: myapp.local
+      http:
+        paths:
+          - path: /api1
+            pathType: Prefix
+            backend:
+              service:
+                name: gha-learning
+                port:
+                  number: 8081
+          - path: /api2
+            pathType: Prefix
+            backend:
+              service:
+                name: kubernetes-learning-service
+                port:
+                  number: 8080
